@@ -1,18 +1,15 @@
 require_relative 'utils.rb'
 
-def make_menu(items, title)
+def make_menu(items, title, generator)
 	initscr
 	height = 20
 	width = 80
 	height = max(Ncurses.LINES - 2, height)
-	Ncurses.start_color
 	Ncurses.cbreak
 	Ncurses.noecho
 	Ncurses.keypad Ncurses::stdscr, true
-	Ncurses.init_pair 1, Ncurses::COLOR_RED, Ncurses::COLOR_BLACK
-	Ncurses.init_pair 2, Ncurses::COLOR_CYAN, Ncurses::COLOR_BLACK
 
-	items = make_items items
+	items = generator.call items
 	menu = Ncurses::Menu::MENU.new items
 	menu_win = Ncurses.newwin height, width, 4, 4
 	Ncurses.keypad menu_win, true
@@ -40,7 +37,7 @@ def make_menu(items, title)
 			menu.menu_driver Ncurses::Menu::REQ_UP_ITEM
 		when Ncurses::KEY_RIGHT, "\n".getbyte(0), " ".getbyte(0)
 			return menu.current_item.user_object
-		when "q".getbyte(0), 27 # escape
+		when "q".getbyte(0), Ncurses::KEY_LEFT, 27 # escape
 			return -1
 		else
 			;

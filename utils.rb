@@ -22,6 +22,17 @@ def initscr
 	$VERBOSE = nil
 	Ncurses.initscr
 	$VERBOSE = old
+	Ncurses.start_color
+	Ncurses.init_pair 1, Ncurses::COLOR_RED, Ncurses::COLOR_BLACK
+	Ncurses.init_pair 2, Ncurses::COLOR_CYAN, Ncurses::COLOR_BLACK
+	Ncurses.init_pair 3, Ncurses::COLOR_GREEN, Ncurses::COLOR_BLACK
+	Ncurses.init_pair 4, Ncurses::COLOR_MAGENTA, Ncurses::COLOR_BLACK
+
+	Ncurses.attron Ncurses::COLOR_PAIR(2)
+	Ncurses.mvprintw 1, 2, "Arrow keys to select, right arrow, enter or space to select"
+	Ncurses.mvprintw 2, 2, "left arrow, escape or q to go back"
+	Ncurses.attroff Ncurses::COLOR_PAIR(2)
+	Ncurses.refresh
 end
 def loading
 	initscr
@@ -31,3 +42,35 @@ def max a, b
 	a if a > b
 	b
 end
+def make_thread_items arr
+	r = []
+	arr.each do |item|
+		if item.has_key? "capcode"
+			author = item["capcode"]
+		else
+			author = "Anonymous (#{item["hash"]})"
+		end
+		header = "#{author} No. #{item["post_id"]}"
+		i = Ncurses::Menu::ITEM.new header, ""
+		if not i
+			next
+		end
+		i.user_object = item["post_id"]
+		r.push i
+		first = "| "
+		(item["comment"] + "\n").each_line do |line|
+			i = Ncurses::Menu::ITEM.new first + line, ""
+			first = ""
+			if not i
+				next
+			end
+			i.user_object = item["post_id"]
+			i.opts_off Ncurses::O_SELECTABLE
+			r.push i
+		end
+	end
+	i = Ncurses::Menu::ITEM.new "Reply", ""
+	r.push i
+	r
+end
+
