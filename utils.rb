@@ -1,4 +1,5 @@
 require 'ncurses.rb'
+Width = 80
 def make_items arr
 	index = 0
 	r = []
@@ -51,10 +52,11 @@ def make_thread_items arr
 		i.user_object = item["post_id"]
 		r.push i
 		first = "| "
-		(item["comment"] + "\n").each_line do |line|
+		word_wrap(item["comment"] + "\n").each do |line|
 			i = Ncurses::Menu::ITEM.new fix(first + line), ""
 			if not i
 				Ncurses.endwin
+				puts "Critical error - Ncurses::Menu::Item.new returned nil"
 				puts fix(first + line).inspect
 				exit
 			end
@@ -75,4 +77,27 @@ def fix str
 		r = " "
 	end
 	r
+end
+def word_wrap str
+	arr = str.each_line.to_a
+	r = []
+	arr.each do |line|
+		rr = []
+		running = ""
+		line.split(" ").each do |word|
+			if (running + " " + word).length > (Width - 6)
+				rr.push running
+				running = word
+			else
+				space = " "
+				if running.length == 0
+					space = ""
+				end
+				running += space + word
+			end
+		end
+		rr << running
+		r << rr
+	end
+	r.flatten
 end

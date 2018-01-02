@@ -2,6 +2,7 @@ require 'ncurses.rb'
 require 'dangeru'
 require_relative 'utils.rb'
 require_relative 'make_menu.rb'
+#require_relative 'make_form.rb'
 puts "Fetching boards..."
 api = Dangeru.new("dangeru.us", true)
 cookie = nil
