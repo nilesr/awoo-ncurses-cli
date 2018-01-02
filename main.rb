@@ -16,8 +16,12 @@ while (board_idx = make_menu(boards, "danger/u/", make_items_l)) != -1
 	while (thread_idx = make_menu(thread_names, make_title(board, api, cookie), make_items_l)) != -1
 		thread = threads[thread_idx]
 		puts "Loading thread " + thread["post_id"].to_s + " - " + thread["title"]
-		replies = api.get_thread_replies thread["post_id"]
-		while (result = make_menu replies, "/#{board}/ - #{thread["title"]}", ->(x) {make_thread_items x}) != -1
+		while true
+			replies = api.get_thread_replies thread["post_id"]
+			result = make_menu replies, "/#{board}/ - #{thread["title"]}", ->(x) {make_thread_items x}
+			if result == -1
+				break
+			end
 			to_post = make_form result, true
 			api.reply thread["post_id"], board, to_post.comment, cookie, to_post.capcode
 		end

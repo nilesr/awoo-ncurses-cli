@@ -51,10 +51,12 @@ def make_form post, reply
 			form.form_driver Ncurses::Form::REQ_END_LINE
 		when Ncurses::KEY_LEFT
 			form.form_driver(Ncurses::Form::REQ_PREV_CHAR);
-		when Ncurses::KEY_RIGHT
+		when Ncurses::KEY_RIGHT, Ncurses::KEY_STAB
 			form.form_driver(Ncurses::Form::REQ_NEXT_CHAR);
 		when Ncurses::KEY_BACKSPACE
 			form.form_driver(Ncurses::Form::REQ_DEL_PREV);
+		when "\n".getbyte(0)
+			form.form_driver(Ncurses::Form::REQ_NEW_LINE);
 		else
 			form.form_driver c
 		end
@@ -64,5 +66,9 @@ def make_form post, reply
 		Ncurses.refresh
 	end
 	Ncurses.endwin
-	return ReplyStruct.new title, "", comment
+	title_str = ""
+	if not reply
+		title_str = title.buffer(0)
+	end
+	return ReplyStruct.new title_str, "", comment.buffer(0)
 end
