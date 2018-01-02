@@ -2,7 +2,7 @@ require 'ncurses.rb'
 require 'dangeru'
 require_relative 'utils.rb'
 require_relative 'make_menu.rb'
-#require_relative 'make_form.rb'
+require_relative 'make_form.rb'
 puts "Fetching boards..."
 api = Dangeru.new("dangeru.us", true)
 cookie = nil
@@ -18,7 +18,8 @@ while (board_idx = make_menu(boards, "danger/u/", make_items_l)) != -1
 		puts "Loading thread " + thread["post_id"].to_s + " - " + thread["title"]
 		replies = api.get_thread_replies thread["post_id"]
 		while (result = make_menu replies, "/#{board}/ - #{thread["title"]}", ->(x) {make_thread_items x}) != -1
-			reply result
+			to_post = make_form result, true
+			api.reply thread["post_id"], board, to_post.comment, cookie, to_post.capcode
 		end
 	end
 end

@@ -28,6 +28,9 @@ def initscr
 	Ncurses.init_pair 2, Ncurses::COLOR_CYAN, Ncurses::COLOR_BLACK
 	Ncurses.init_pair 3, Ncurses::COLOR_GREEN, Ncurses::COLOR_BLACK
 	Ncurses.init_pair 4, Ncurses::COLOR_MAGENTA, Ncurses::COLOR_BLACK
+	Ncurses.init_pair 5, Ncurses::COLOR_MAGENTA, Ncurses::COLOR_MAGENTA
+	Ncurses.init_pair 6, Ncurses::COLOR_WHITE, Ncurses::COLOR_WHITE
+	Ncurses.init_pair 7, Ncurses::COLOR_BLACK, Ncurses::COLOR_WHITE
 
 	Ncurses.attron Ncurses::COLOR_PAIR(2)
 	Ncurses.mvprintw 1, 2, "Arrow keys to select, right arrow, enter or space to select"
