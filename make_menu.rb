@@ -43,9 +43,9 @@ def make_menu(items, title, generator)
 		when "q".getbyte(0), Ncurses::KEY_LEFT, 27 # escape
 			Ncurses.endwin
 			return -1
-		when Ncurses::KEY_PPAGE
-			menu.menu_driver Ncurses::Menu::REQ_SCR_DPAGE
 		when Ncurses::KEY_NPAGE
+			menu.menu_driver Ncurses::Menu::REQ_SCR_DPAGE
+		when Ncurses::KEY_PPAGE
 			menu.menu_driver Ncurses::Menu::REQ_SCR_UPAGE
 		else
 			;
