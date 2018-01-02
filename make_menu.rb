@@ -4,13 +4,15 @@ def make_menu(items, title, generator)
 	initscr
 	height = 20
 	width = 80
-	height = max(Ncurses.LINES - 2, height)
+	#height = max(Ncurses.LINES - 2, height)
+	height = Ncurses.LINES - 6
 	Ncurses.cbreak
 	Ncurses.noecho
 	Ncurses.keypad Ncurses::stdscr, true
 
 	items = generator.call items
 	menu = Ncurses::Menu::MENU.new items
+	menu.opts_off Ncurses::Menu::O_SHOWDESC
 	menu_win = Ncurses.newwin height, width, 4, 4
 	Ncurses.keypad menu_win, true
 	menu.set_menu_win menu_win
@@ -36,14 +38,18 @@ def make_menu(items, title, generator)
 		when Ncurses::KEY_UP
 			menu.menu_driver Ncurses::Menu::REQ_UP_ITEM
 		when Ncurses::KEY_RIGHT, "\n".getbyte(0), " ".getbyte(0)
+			Ncurses.endwin
 			return menu.current_item.user_object
 		when "q".getbyte(0), Ncurses::KEY_LEFT, 27 # escape
+			Ncurses.endwin
 			return -1
+		when Ncurses::KEY_PPAGE
+			menu.menu_driver Ncurses::Menu::REQ_SCR_DPAGE
+		when Ncurses::KEY_NPAGE
+			menu.menu_driver Ncurses::Menu::REQ_SCR_UPATE
 		else
 			;
 		end
 		menu_win.refresh
 	end
-
-	Ncurses.endwin
 end

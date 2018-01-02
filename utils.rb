@@ -30,13 +30,9 @@ def initscr
 
 	Ncurses.attron Ncurses::COLOR_PAIR(2)
 	Ncurses.mvprintw 1, 2, "Arrow keys to select, right arrow, enter or space to select"
-	Ncurses.mvprintw 2, 2, "left arrow, escape or q to go back"
+	Ncurses.mvprintw 2, 2, "left arrow, escape or q to go back. Page up and page down are also supported"
 	Ncurses.attroff Ncurses::COLOR_PAIR(2)
 	Ncurses.refresh
-end
-def loading
-	initscr
-	Ncurses.endwin
 end
 def max a, b
 	a if a > b
@@ -52,20 +48,19 @@ def make_thread_items arr
 		end
 		header = "#{author} No. #{item["post_id"]}"
 		i = Ncurses::Menu::ITEM.new header, ""
-		if not i
-			next
-		end
 		i.user_object = item["post_id"]
 		r.push i
 		first = "| "
 		(item["comment"] + "\n").each_line do |line|
-			i = Ncurses::Menu::ITEM.new first + line, ""
-			first = ""
+			i = Ncurses::Menu::ITEM.new fix(first + line), ""
 			if not i
-				next
+				Ncurses.endwin
+				puts fix(first + line).inspect
+				exit
 			end
+			first = ""
 			i.user_object = item["post_id"]
-			i.opts_off Ncurses::O_SELECTABLE
+			i.opts_off Ncurses::Menu::O_SELECTABLE
 			r.push i
 		end
 	end
@@ -73,4 +68,11 @@ def make_thread_items arr
 	r.push i
 	r
 end
-
+def fix str
+	# this could be better
+	r = str.gsub("\n", "").gsub("\r", "")
+	if r == ""
+		r = " "
+	end
+	r
+end
