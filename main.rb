@@ -13,8 +13,15 @@ while (board_idx = make_menu(boards, "danger/u/", make_items_l)) != -1
 	puts "Loading board " + board
 	threads = api.get_board board
 	thread_names = threads.map do |x| x["title"] end
+	thread_names = ["New Thread"] + thread_names
 	while (thread_idx = make_menu(thread_names, make_title(board, api, cookie), make_items_l)) != -1
-		thread = threads[thread_idx]
+		if thread_idx == 0
+			to_post = make_form nil, false
+			api.post_op board, to_post.title, to_post.comment, cookie, to_post.capcode
+			# TODO instead of doing next, pull the redirect url from the Net::HTTPRedirection that api.post_op returns
+			next
+		end
+		thread = threads[thread_idx - 1]
 		puts "Loading thread " + thread["post_id"].to_s + " - " + thread["title"]
 		while true
 			replies = api.get_thread_replies thread["post_id"]
